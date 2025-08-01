@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>音乐视唱考试</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; background: #f7f7f7; }
+    h1 { color: #333; }
+    #question-container { display: none; margin-top: 20px; }
+    #question-img { max-width: 80%; height: auto; margin: 20px 0; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
+    #timer { font-size: 28px; margin: 20px 0; color: #d9534f; font-weight: bold; }
+    button { padding: 15px 30px; font-size: 20px; margin: 20px; cursor: pointer;
+             background: #337ab7; color: #fff; border: none; border-radius: 6px; }
+    button:hover { background: #286090; }
+    .tip { color: gray; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🎵 音乐视唱考试 🎵</h1>
+  <button id="draw-btn">抽取题目</button>
+  <div id="tip" class="tip"></div>
+
+  <div id="question-container">
+    <div id="timer">剩余时间：120 秒</div>
+    <img id="question-img" src="" alt="乐谱题目" />
+  </div>
+
+  <script>
+    // 题库改为5张图片
+    const questionBank = Array.from({ length: 5 }, (_, i) => `images/score${i + 1}.jpg`);
+    let remainingQuestions = [...questionBank];
+    let timer;
+    let timeLeft = 120;
+
+    const drawBtn = document.getElementById("draw-btn");
+    const questionContainer = document.getElementById("question-container");
+    const questionImg = document.getElementById("question-img");
+    const timerDiv = document.getElementById("timer");
+    const tipDiv = document.getElementById("tip");
+
+    drawBtn.addEventListener("click", () => {
+      if (remainingQuestions.length === 0) {
+        tipDiv.textContent = "所有题目已抽完！";
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+      const question = remainingQuestions.splice(randomIndex, 1)[0];
+      showQuestion(question);
+    });
+
+    function showQuestion(imgSrc) {
+      questionImg.src = imgSrc;
+      questionContainer.style.display = "block";
+      drawBtn.style.display = "none";
+      tipDiv.textContent = "";
+
+      timeLeft = 120;
+      timerDiv.textContent = `剩余时间：${timeLeft} 秒`;
+
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        timerDiv.textContent = `剩余时间：${timeLeft} 秒`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          hideQuestion();
+        }
+      }, 1000);
+    }
+
+    function hideQuestion() {
+      questionContainer.style.display = "none";
+      questionImg.src = "";
+      drawBtn.style.display = "inline-block";
+    }
+  </script>
+</body>
+</html>
